@@ -11,10 +11,12 @@ from .helpers import pad, split_bayer, reconstruct_bayer, shift_array
 
 
 class DPC(BasicModule):
+    #  Basic Gradient Algorithm
     def execute(self, data):
         bayer = data['bayer'].astype(np.int32)
-
-        padded_bayer = pad(bayer, pads=2)
+        #  Modification(alberlin): Change the padding to 4 will 
+        padded_bayer = pad(bayer, pads=4) 
+        #  padded_bayer = pad(bayer, pads=2)
         padded_sub_arrays = split_bayer(padded_bayer, self.cfg.hardware.bayer_pattern)
 
         dpc_sub_arrays = []

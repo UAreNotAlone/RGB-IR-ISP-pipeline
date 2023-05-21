@@ -17,7 +17,7 @@ def demo_test_raw():
     cfg = Config('configs/test.yaml')
     pipeline = Pipeline(cfg)
 
-    raw_path = 'raw/test.RAW'
+    raw_path = 'raw/1_1.raw'
     bayer = np.fromfile(raw_path, dtype='uint16', sep='')
     bayer = bayer.reshape((cfg.hardware.raw_height, cfg.hardware.raw_width))
 

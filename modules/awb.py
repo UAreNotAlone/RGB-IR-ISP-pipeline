@@ -22,15 +22,18 @@ class AWB(BasicModule):
     def execute(self, data):
         bayer = data['bayer'].astype(np.uint32)
 
-        sub_arrays = split_bayer(bayer, self.cfg.hardware.bayer_pattern)
-        gains = (self.r_gain, self.gr_gain, self.gb_gain, self.b_gain)
+        #  Using QCGP to do the AWB
+        bayer = np.clip(bayer, 0, self.cfg.saturation_values.hdr)
 
-        wb_sub_arrays = []
-        for sub_array, gain in zip(sub_arrays, gains):
-            wb_sub_arrays.append(
-                np.right_shift(gain * sub_array, 10)
-            )
-        wb_bayer = reconstruct_bayer(wb_sub_arrays, self.cfg.hardware.bayer_pattern)
-        wb_bayer = np.clip(wb_bayer, 0, self.cfg.saturation_values.hdr)
+        # sub_arrays = split_bayer(bayer, self.cfg.hardware.bayer_pattern)
+        # gains = (self.r_gain, self.gr_gain, self.gb_gain, self.b_gain)
 
-        data['bayer'] = wb_bayer.astype(np.uint16)
+        # wb_sub_arrays = []
+        # for sub_array, gain in zip(sub_arrays, gains):
+        #     wb_sub_arrays.append(
+        #         np.right_shift(gain * sub_array, 10)
+        #     )
+        # wb_bayer = reconstruct_bayer(wb_sub_arrays, self.cfg.hardware.bayer_pattern)
+        # wb_bayer = np.clip(wb_bayer, 0, self.cfg.saturation_values.hdr)
+
+        # data['bayer'] = wb_bayer.astype(np.uint16)

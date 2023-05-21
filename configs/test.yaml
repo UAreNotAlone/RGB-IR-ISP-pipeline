@@ -18,8 +18,8 @@ module_enable_status:                 # do NOT modify modules order
   scl: False
 
 hardware:
-  raw_width: 1920
-  raw_height: 1080
+  raw_width: 2592
+  raw_height: 1944
   raw_bit_depth: 10
   bayer_pattern: rggb
 

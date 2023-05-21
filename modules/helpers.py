@@ -5,6 +5,34 @@
 
 
 import numpy as np
+from scipy.signal import convolve2d
+
+
+#  Guided Filter Algorithm
+def guided_filter(p, I, r, eps):
+    # Step 1: Compute means
+    mean_I = convolve2d(I, np.ones((r, r)), mode='same') / (r * r)
+    mean_p = convolve2d(p, np.ones((r, r)), mode='same') / (r * r)
+    corr_I = convolve2d(I * I, np.ones((r, r)), mode='same') / (r * r)
+    corr_Ip = convolve2d(I * p, np.ones((r, r)), mode='same') / (r * r)
+
+    # Step 2: Compute variances and covariances
+    var_I = corr_I - mean_I * mean_I
+    cov_Ip = corr_Ip - mean_I * mean_p
+
+    # Step 3: Compute filter parameters
+    a = cov_Ip / (var_I + eps)
+    b = mean_p - a * mean_I
+
+    # Step 4: Compute means of parameters
+    mean_a = convolve2d(a, np.ones((r, r)), mode='same') / (r * r)
+    mean_b = convolve2d(b, np.ones((r, r)), mode='same') / (r * r)
+
+    # Step 5: Compute filtered output
+    q = mean_a * I + mean_b
+
+    return q
+
 
 
 def get_bayer_indices(pattern):
