@@ -43,7 +43,60 @@ def get_bayer_indices(pattern):
     return {'gbrg': ((0, 1), (1, 1), (0, 0), (1, 0)),
             'rggb': ((0, 0), (1, 0), (0, 1), (1, 1)),
             'bggr': ((1, 1), (0, 1), (1, 0), (0, 0)),
-            'grbg': ((1, 0), (0, 0), (1, 1), (0, 1))}[pattern.lower()]
+            'grbg': ((1, 0), (0, 0), (1, 1), (0, 1)),
+            'rgb-ir': ((0,0), (0, 1), (0, 2), (0, 3),
+                       (1, 0), (1, 1), (1, 2), (1, 3),
+                       (2, 0), (2, 1), (2, 2), (2, 3),
+                       (3, 0), (3, 1), (3, 2), (3, 3))
+                       }[pattern.lower()]
+
+def split_rgbir_bayer(bayer_array, bayer_pattern = 'rgb-ir'):
+    """
+    Split R, G, B, and IR channels sub-arrays from a RGB-IR Bayer array
+    :param bayer_array: np.ndarray(H, W)
+    :param bayer_pattern: 'rggb' | 'gbrg' | 'bggr' | 'grbg'
+    :return: 4-element list of R, G, B, and IR channel sub-arrays, each as an np.ndarray(H/2, W/2)
+    """
+    rgb_ir_indices = get_bayer_indices(bayer_pattern)
+
+    sub_arrays = []
+    for idx in rgb_ir_indices:
+        x0, y0 = idx
+        sub_arrays.append(
+            bayer_array[y0::4, x0::4]
+        )
+    return sub_arrays
+
+def get_rgbir_sub_array(bayer_array, bayer_pattern='rgb-ir'):
+    sub_arrays = split_rgbir_bayer(bayer_array)
+
+    B0, G0, R0, G1 = sub_arrays[0], sub_arrays[1], sub_arrays[2], sub_arrays[3]
+    G2, IR0, G3, IR1 = sub_arrays[4], sub_arrays[5], sub_arrays[6], sub_arrays[7]
+    R1, G4, B1, G5 = sub_arrays[8], sub_arrays[9], sub_arrays[10], sub_arrays[11]
+
+    return R0 + R1, G0 + G1 + G2 + G3 + G4 + G5, B0 + B1, IR0 + IR1
+
+def get_mask_rgbir(bayer_array):
+    mask_r = np.zeros(bayer_array.shape)
+    mask_g = np.zeros(bayer_array.shape)
+    mask_b = np.zeros(bayer_array.shape)
+    mask_ir = np.zeros(bayer_array.shape)
+
+    mask_r[0::4, 2::4] = 1
+    mask_r[2::4, 0::4] = 1
+
+    mask_b[0::4, 0::4] = 1
+    mask_b[2::4, 2::4] = 1
+
+    mask_ir[1::4, 1::4] = 1
+    mask_ir[3::4, 3::4] = 1
+    mask_ir[1::4, 3::4] = 1
+    mask_ir[3::4, 1::4] = 1
+
+    mask_g = np.ones(bayer_array.shape) - mask_b - mask_r - mask_ir
+
+    return mask_r, mask_g, mask_b, mask_ir
+
 
 
 def split_bayer(bayer_array, bayer_pattern):
@@ -53,7 +106,7 @@ def split_bayer(bayer_array, bayer_pattern):
     :param bayer_pattern: 'gbrg' | 'rggb' | 'bggr' | 'grbg'
     :return: 4-element list of R, Gr, Gb, and B channel sub-arrays, each is an np.ndarray(H/2, W/2)
     """
-    rggb_indices = get_bayer_indices(bayer_pattern)
+    rggb_indices = ((0, 0), (1, 0), (0, 1), (1, 1))
 
     sub_arrays = []
     for idx in rggb_indices:
@@ -104,7 +157,7 @@ def pad(array, pads, mode='reflect'):
         else:
             raise NotImplementedError
 
-    return np.pad(array, pads, mode)
+    return np.pad(array, pads, mode=mode)
 
 
 def crop(array, crops):
