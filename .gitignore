@@ -6,4 +6,5 @@
 tmp/
 temp/
 output/
+*.jpg
 TODO*
