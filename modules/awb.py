@@ -58,10 +58,10 @@ class AWB(BasicModule):
         BLUE = bayer * mask_b
         IR = bayer * mask_ir
 
-        m_RED = (u_red * RED * RED) + v_red
-        m_GREEN = (u_green * GREEN * GREEN) + v_green
-        m_BLUE = (u_blue * BLUE * BLUE) + v_blue
-        m_IR = (u_ir * IR * IR) + v_ir
+        m_RED = (u_red * RED * RED) + v_red * RED
+        m_GREEN = (u_green * GREEN * GREEN) + v_green * GREEN
+        m_BLUE = (u_blue * BLUE * BLUE) + v_blue * BLUE
+        m_IR = (u_ir * IR * IR) + v_ir * IR
 
         m_RGBIR = m_RED * mask_r + m_GREEN * mask_g + m_BLUE * mask_b + m_IR * mask_ir
         data['bayer'] = m_RGBIR.astype(np.uint16)
