@@ -23,9 +23,9 @@ class BLC(BasicModule):
         #  Get mean value for each channel
         #  Noted that raw_r is the sub-array of the original picture
         mean_r = np.mean(raw_r) / 2
-        mean_g = np.mean(raw_g) / 6
+        mean_g = np.mean(raw_g) / 8
         mean_b = np.mean(raw_b) / 2
-        mean_ir = np.mean(raw_ir) / 2 
+        mean_ir = np.mean(raw_ir) / 4
 
         mask_r, mask_g, mask_b, mask_ir = get_mask_rgbir(bayer)
         RED = bayer * mask_r

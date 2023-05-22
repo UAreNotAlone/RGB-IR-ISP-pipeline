@@ -64,8 +64,14 @@ class CFA(BasicModule):
             self.execute_bilinear(data)
         elif self.params.mode.lower() == 'malvar':
             self.execute_malvar(data)
+        elif self.params.mode.lower() == 'custom':
+            self.execute_custom(data)
         else:
             raise NotImplementedError
+    
+    def execute_custom(self, data):
+        bayer = data['bayer'].astype(np.int32)
+        pass
 
     def execute_bilinear(self, data):
         bayer = data['bayer'].astype(np.int32)

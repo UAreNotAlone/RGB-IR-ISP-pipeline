@@ -17,6 +17,8 @@ class CNF(BasicModule):
         B0, G0, R0, G1 = sub_arrays[0], sub_arrays[1], sub_arrays[2], sub_arrays[3]
         G2, IR0, G3, IR1 = sub_arrays[4], sub_arrays[5], sub_arrays[6], sub_arrays[7]
         R1, G4, B1, G5 = sub_arrays[8], sub_arrays[9], sub_arrays[10], sub_arrays[11]
+        G6, IR2, G7, IR3 = sub_arrays[12], sub_arrays[13], sub_arrays[14], sub_arrays[15]
+
         r = np.right_shift(R1 + R0, 1)
         b = np.right_shift(B1 + B0, 1)
         avg_r = np.right_shift(mean_filter(R0, filter_size=5) + mean_filter(R1, filter_size=5), 1)
@@ -76,8 +78,8 @@ class CNF(BasicModule):
         B0, G0, R0, G1 = sub_arrays[0], sub_arrays[1], sub_arrays[2], sub_arrays[3]
         G2, IR0, G3, IR1 = sub_arrays[4], sub_arrays[5], sub_arrays[6], sub_arrays[7]
         R1, G4, B1, G5 = sub_arrays[8], sub_arrays[9], sub_arrays[10], sub_arrays[11]
+        G6, IR2, G7, IR3 = sub_arrays[12], sub_arrays[13], sub_arrays[14], sub_arrays[15]
         avg_r, avg_g, avg_b, is_r_noise, is_b_noise = self.cnd(bayer)
-
         # y = 0.299 * avg_r + 0.587 * avg_g + 0.114 * avg_b
         y = np.right_shift(306 * avg_r + 601 * avg_g + 117 * avg_b, 10)
         r0_cnc = self.cnc(R0, avg_g, avg_r, avg_b, y, self.params.r_gain)
@@ -94,7 +96,7 @@ class CNF(BasicModule):
         # r_cnc = is_r_noise * r_cnc + ~is_r_noise * r
         # b_cnc = is_b_noise * b_cnc + ~is_b_noise * b
 
-        cnf_bayer = reconstruct_bayer((b0_cnc, G0, r0_cnc, G1, G2, IR0, G3, IR1, r1_cnc, G4, b1_cnc, G5), self.cfg.hardware.bayer_pattern)
+        cnf_bayer = reconstruct_bayer((b0_cnc, G0, r0_cnc, G1, G2, IR0, G3, IR1, r1_cnc, G4, b1_cnc, G5, G6, IR2, G7, IR3), self.cfg.hardware.bayer_pattern)
         cnf_bayer = np.clip(cnf_bayer, 0, self.cfg.saturation_values.hdr)
 
         data['bayer'] = cnf_bayer.astype(np.uint16)

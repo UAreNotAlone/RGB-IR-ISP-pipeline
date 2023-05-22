@@ -73,8 +73,9 @@ def get_rgbir_sub_array(bayer_array, bayer_pattern='rgb-ir'):
     B0, G0, R0, G1 = sub_arrays[0], sub_arrays[1], sub_arrays[2], sub_arrays[3]
     G2, IR0, G3, IR1 = sub_arrays[4], sub_arrays[5], sub_arrays[6], sub_arrays[7]
     R1, G4, B1, G5 = sub_arrays[8], sub_arrays[9], sub_arrays[10], sub_arrays[11]
+    G6, IR2, G7, IR3 = sub_arrays[12], sub_arrays[13], sub_arrays[14], sub_arrays[15]
 
-    return R0 + R1, G0 + G1 + G2 + G3 + G4 + G5, B0 + B1, IR0 + IR1
+    return R0 + R1, G0 + G1 + G2 + G3 + G4 + G5 + G6 + G7, B0 + B1, IR0 + IR1 + IR3 + IR2
 
 def get_mask_rgbir(bayer_array):
     mask_r = np.zeros(bayer_array.shape)

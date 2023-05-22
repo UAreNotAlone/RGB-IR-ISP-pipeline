@@ -34,17 +34,23 @@ class AWB(BasicModule):
         #  Get mean value for each channel
         #  Noted that raw_r is the sub-array of the original picture
         mean_r = np.mean(raw_r) / 2
-        mean_g = np.mean(raw_g) / 6
+        mean_g = np.mean(raw_g) / 8
         mean_b = np.mean(raw_b) / 2
-        mean_ir = np.mean(raw_ir) / 2 
+        mean_ir = np.mean(raw_ir) / 4
         mean_k = (mean_r + mean_g + mean_b + mean_ir) / 4
 
         #  Get the max value for each channel
-        max_r = np.max(raw_r)
-        max_g = np.max(raw_g)
-        max_b = np.max(raw_b)
-        max_ir = np.max(raw_ir)
-        max_k = (mean_r + mean_g + mean_b + mean_ir) / 4
+        mask_r, mask_g, mask_b, mask_ir = get_mask_rgbir(bayer)
+        RED = bayer * mask_r
+        GREEN = bayer * mask_g
+        BLUE = bayer * mask_b
+        IR = bayer * mask_ir
+
+        max_r = np.max(RED)
+        max_g = np.max(GREEN)
+        max_b = np.max(BLUE)
+        max_ir = np.max(IR)
+        max_k = (max_r + max_g + max_b + max_ir) / 4
 
         #  Get the uv for each channel
         u_red, v_red = self.getUV(max_r, max_k, mean_r, mean_k)
@@ -52,11 +58,7 @@ class AWB(BasicModule):
         u_blue, v_blue = self.getUV(max_b, max_k, mean_b, mean_k)
         u_ir, v_ir = self.getUV(max_ir, max_k, mean_ir, mean_k)
 
-        mask_r, mask_g, mask_b, mask_ir = get_mask_rgbir(bayer)
-        RED = bayer * mask_r
-        GREEN = bayer * mask_g
-        BLUE = bayer * mask_b
-        IR = bayer * mask_ir
+
 
         m_RED = (u_red * RED * RED) + v_red * RED
         m_GREEN = (u_green * GREEN * GREEN) + v_green * GREEN
