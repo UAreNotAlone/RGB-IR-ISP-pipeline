@@ -26,6 +26,10 @@ def demo_test_raw():
     output_path = op.join(OUTPUT_DIR, 'test.png')
     output = cv2.cvtColor(data['output'], cv2.COLOR_RGB2BGR)
     cv2.imwrite(output_path, output)
+    edge_map = data['edge_map']
+    edge_map_path = op.join(OUTPUT_DIR, 'edge.png')
+    print(data['edge_map'])
+    cv2.imwrite(edge_map_path, edge_map)
     for module_name, result in intermediates.items():
         output = pipeline.get_output(result)
         print("intermediates...")

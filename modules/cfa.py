@@ -104,7 +104,7 @@ class CFA(BasicModule):
                         red_left_up = padded_bayer[ind_x - 1][ind_y - 1]
                         red_right_down = padded_bayer[ind_x + 1][ind_y + 1]
                         IR[ori_ind_x][ori_ind_y] = (red_left_up + red_right_down) / 2
-                        
+
                     elif padded_mask_r[ind_x + 1][ind_y - 1] == 1:
                         red_right_up = padded_bayer[ind_x + 1][ind_y - 1]
                         red_left_down = padded_bayer[ind_x - 1][ind_y + 1]

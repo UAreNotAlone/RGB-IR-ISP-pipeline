@@ -127,8 +127,10 @@ class Pipeline:
         if 'y_image' in data and 'cbcr_image' in data:
             ycbcr_image = np.dstack([data['y_image'][..., None], data['cbcr_image']])
             output = ycbcr_to_rgb(ycbcr_image)
+            print("fetching output y_image + cbcr_image...")
         elif 'rgb_image' in data:
             output = data['rgb_image']
+            print("fetching output rgb_image...")
             if output.dtype != np.uint8:
                 output = output.astype(np.float32)
                 output = (255 * output / self.cfg.saturation_values.hdr).astype(np.uint8)
