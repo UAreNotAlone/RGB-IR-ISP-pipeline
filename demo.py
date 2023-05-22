@@ -21,11 +21,17 @@ def demo_test_raw():
     bayer = np.fromfile(raw_path, dtype='uint16', sep='')
     bayer = bayer.reshape((cfg.hardware.raw_height, cfg.hardware.raw_width))
 
-    data, _ = pipeline.execute(bayer)
+    data, intermediates = pipeline.execute(bayer)
 
     output_path = op.join(OUTPUT_DIR, 'test.png')
     output = cv2.cvtColor(data['output'], cv2.COLOR_RGB2BGR)
     cv2.imwrite(output_path, output)
+    for module_name, result in intermediates.items():
+        output = pipeline.get_output(result)
+        print("intermediates...")
+        output_path = op.join(OUTPUT_DIR, '{}.jpg'.format(module_name))
+        output = cv2.cvtColor(output, cv2.COLOR_RGB2BGR)
+        cv2.imwrite(output_path, output)
 
 
 def demo_nikon_d3x():

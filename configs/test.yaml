@@ -40,10 +40,10 @@ blc:
 aaf: ~
 
 awb:
-  r_gain: &r_gain 1860                # x1024
+  r_gain: &r_gain 2415                # x1024
   gr_gain: 1024                       # x1024
   gb_gain: 1024                       # x1024
-  b_gain: &b_gain 1280                # x1024
+  b_gain: &b_gain 1168                # x1024
 
 cnf:
   diff_threshold: 0
@@ -55,13 +55,13 @@ cfa:
 
 ccm:
   ccm:
-    - [ 1024, 0, 0, 0 ]
-    - [ 0, 1024, 0, 0 ]
-    - [ 0, 0, 1024, 0 ]
+    - [ -1896, -811, -62, 0 ]
+    - [ -160, 1687, -503, 0 ]
+    - [ 18, -557, 1563, 0 ]
 
 gac:
   gain: 256                           # x256
-  gamma: 0.42
+  gamma: 0.95
 
 csc: ~
 
@@ -71,17 +71,17 @@ nlm:
   h: 10                               # larger value has stronger smoothing effect
 
 bnf:
-  intensity_sigma: 0.8                # larger value has stronger smoothing effect
-  spatial_sigma: 0.8                  # larger value has stronger smoothing effect
+  intensity_sigma: 0.5                # larger value has stronger smoothing effect
+  spatial_sigma: 0.4                  # larger value has stronger smoothing effect
 
 ceh:
   tiles: [4, 6]
   clip_limit: 0.01
 
 eeh:
-  edge_gain: 384                      # x256
-  flat_threshold: 4                   # delta <= flat_threshold: set delta to 0
-  edge_threshold: 8                   # delta > edge_threshold: increase delta by edge_gain
+  edge_gain: 512                      # x256
+  flat_threshold: 2                   # delta <= flat_threshold: set delta to 0
+  edge_threshold: 4                   # delta > edge_threshold: increase delta by edge_gain
   delta_threshold: 64
 
 fcs:
@@ -97,5 +97,5 @@ bcc:
   contrast_gain: 256                  # x256
 
 scl:
-  width: 1920
-  height: 1080
+  width: 1536
+  height: 1024

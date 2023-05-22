@@ -7,7 +7,7 @@
 import numpy as np
 
 from .basic_module import BasicModule
-from .helpers import pad, split_bayer, reconstruct_bayer, shift_array
+from .helpers import pad, split_bayer, reconstruct_bayer, shift_array, get_mask_rgbir
 
 
 class CFA(BasicModule):
@@ -41,14 +41,14 @@ class CFA(BasicModule):
         k = {'rggb': 0,
              'bggr': 2,
              'grbg': 1,
-             'gbrg': 3}[self.cfg.hardware.bayer_pattern]
+             'gbrg': 3}['rggb']
         return np.rot90(array, k=k)
 
     def rotate_from_rggb(self, array):
         k = {'rggb': 0,
              'bggr': 2,
              'grbg': 3,
-             'gbrg': 1}[self.cfg.hardware.bayer_pattern]
+             'gbrg': 1}['rggb']
         return np.rot90(array, k=k)
 
     @staticmethod
@@ -71,6 +71,48 @@ class CFA(BasicModule):
     
     def execute_custom(self, data):
         bayer = data['bayer'].astype(np.int32)
+        mask_r, mask_g, mask_b, mask_ir = get_mask_rgbir(bayer)
+        RED = bayer * mask_r
+        GREEN = bayer * mask_g
+        BLUE = bayer * mask_b
+        IR = bayer * mask_ir
+        #  Sol1
+        #  Get Guided-Green
+        #  Green-value interpolation
+        #  Residual Interpolation
+
+        #  Sol2
+        #  Convert to rggb format
+        padded_bayer = pad(bayer, 2, 'reflect')
+        padded_mask_r = pad(mask_r, 2, 'reflect')
+        for ind_x in range(2, padded_bayer.shape[0] - 2):
+            for ind_y in range(2, padded_bayer.shape[1] - 2):
+                #  Red
+                ori_ind_x = ind_x - 2
+                ori_ind_y = ind_y - 2
+                if mask_r[ori_ind_x][ori_ind_y] == 1:
+                    blue_r = padded_bayer[ind_x][ind_y + 2]
+                    blue_l = padded_bayer[ind_x][ind_y - 2]
+                    blue_t = padded_bayer[ind_x - 2][ind_y]
+                    blue_d = padded_bayer[ind_x + 2][ind_y]
+                    RED[ori_ind_x][ori_ind_y] = (blue_d + blue_l + blue_t + blue_r) / 4
+                
+                #  IR
+                if mask_ir[ori_ind_x][ori_ind_y] == 1:
+                    #  positive oblique  
+                    if padded_mask_r[ind_x - 1][ind_y - 1] == 1:
+                        red_left_up = padded_bayer[ind_x - 1][ind_y - 1]
+                        red_right_down = padded_bayer[ind_x + 1][ind_y + 1]
+                        IR[ori_ind_x][ori_ind_y] = (red_left_up + red_right_down) / 2
+                        
+                    elif padded_mask_r[ind_x + 1][ind_y - 1] == 1:
+                        red_right_up = padded_bayer[ind_x + 1][ind_y - 1]
+                        red_left_down = padded_bayer[ind_x - 1][ind_y + 1]
+                        IR[ori_ind_x][ori_ind_y] = (red_left_down + red_right_up) / 2
+        rggb_bayer = RED*mask_r + BLUE*mask_b + GREEN*mask_g + IR*mask_ir
+        data['bayer'] = rggb_bayer.astype(np.uint16)
+        #  self.cfg.hardware.bayer_pattern = 'rggb'
+        self.execute_malvar(data)
         pass
 
     def execute_bilinear(self, data):

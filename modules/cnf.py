@@ -23,7 +23,8 @@ class CNF(BasicModule):
         b = np.right_shift(B1 + B0, 1)
         avg_r = np.right_shift(mean_filter(R0, filter_size=5) + mean_filter(R1, filter_size=5), 1)
         avg_g = np.right_shift(mean_filter(G0, filter_size=5) + mean_filter(G1, filter_size=5) + mean_filter(G2, filter_size=5) + 
-                               mean_filter(G3, filter_size=5) + mean_filter(G4, filter_size=5) + mean_filter(G5, filter_size=5), 3)
+                               mean_filter(G3, filter_size=5) + mean_filter(G4, filter_size=5) + mean_filter(G5, filter_size=5) + 
+                               mean_filter(G6, filter_size=5) + mean_filter(G7, filter_size=5), 3)
         avg_b = np.right_shift(mean_filter(B0, filter_size=5)+mean_filter(B1, filter_size=5), 1)
 
         is_r_noise = (r - avg_g > self.params.diff_threshold) * \

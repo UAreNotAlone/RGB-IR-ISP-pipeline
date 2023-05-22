@@ -26,7 +26,7 @@ class AWB(BasicModule):
 
 
     def execute(self, data):
-        bayer = data['bayer'].astype(np.uint32)
+        bayer = data['bayer'].astype(np.int32)
 
         #  Using QCGP to do the AWB
         bayer = np.clip(bayer, 0, self.cfg.saturation_values.hdr)
