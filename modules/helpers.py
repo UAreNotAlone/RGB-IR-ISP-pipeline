@@ -118,22 +118,22 @@ def split_bayer(bayer_array, bayer_pattern):
     return sub_arrays
 
 
-def reconstruct_bayer(sub_arrays, bayer_pattern):
+def reconstruct_bayer(sub_arrays, bayer_pattern = 'rgb-ir'):
     """
     Inverse implementation of split_bayer: reconstruct a Bayer array from a list of
         R, Gr, Gb, and B channel sub-arrays
     :param sub_arrays: 4-element list of R, Gr, Gb, and B channel sub-arrays, each np.ndarray(H/2, W/2)
-    :param bayer_pattern: 'gbrg' | 'rggb' | 'bggr' | 'grbg'
+    :param bayer_pattern: 'gbrg' | 'rggb' | 'bggr' | 'grbg' - > only rgb-ir
     :return: np.ndarray(H, W)
     """
     rggb_indices = get_bayer_indices(bayer_pattern)
 
     height, width = sub_arrays[0].shape
-    bayer_array = np.empty(shape=(2 * height, 2 * width), dtype=sub_arrays[0].dtype)
+    bayer_array = np.empty(shape=(4 * height, 4 * width), dtype=sub_arrays[0].dtype)
 
     for idx, sub_array in zip(rggb_indices, sub_arrays):
         x0, y0 = idx
-        bayer_array[y0::2, x0::2] = sub_array
+        bayer_array[y0::4, x0::4] = sub_array
 
     return bayer_array
 
