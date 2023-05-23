@@ -5,7 +5,9 @@
 
 
 import numpy as np
-
+import os.path as op
+import cv2
+from scipy import ndimage
 from .basic_module import BasicModule
 from .helpers import pad, split_bayer, reconstruct_bayer, shift_array, get_mask_rgbir
 
@@ -68,8 +70,36 @@ class CFA(BasicModule):
             self.execute_custom(data)
         else:
             raise NotImplementedError
+        
+    def fetch_ir(self, data):
+        bayer = data['bayer'].astype(np.int32)
+        mask_r, mask_g, mask_b, mask_ir = get_mask_rgbir(bayer)
+
+        RED = bayer * mask_r
+        GREEN = bayer * mask_g
+        BLUE = bayer * mask_b
+        IR = bayer * mask_ir
+
+        filter_IR_H = [[0.5,0,0.5]]
+        filter_IR_V = [[0.5],[0],[0.5]]
+        window_ir = [[0.25,0,0.25],[0,0,0],[0.25,0,0.25]]
+        
+        inter_ir_h = ndimage.correlate(IR,filter_IR_H).astype(np.float32)
+        inter_ir_v = ndimage.correlate(IR,filter_IR_V)
+        inter_ir = IR + inter_ir_h + inter_ir_v
+
+        rest_inter_ir = ndimage.correlate(inter_ir,window_ir) * (mask_r + mask_b)
+
+        newIr = inter_ir + rest_inter_ir
+
+        OUTPUT_DIR = './output'
+        output_path = op.join(OUTPUT_DIR, 'ir.png')
+        cv2.imwrite(output_path, newIr.astype(np.float32))
+        data['IR'] = newIr
+        pass
     
     def execute_custom(self, data):
+        self.fetch_ir(data)
         bayer = data['bayer'].astype(np.int32)
         mask_r, mask_g, mask_b, mask_ir = get_mask_rgbir(bayer)
         RED = bayer * mask_r
@@ -113,6 +143,10 @@ class CFA(BasicModule):
         data['bayer'] = rggb_bayer.astype(np.uint16)
         #  self.cfg.hardware.bayer_pattern = 'rggb'
         self.execute_malvar(data)
+        # OUTPUT_DIR = './output'
+        # before_cfa_path = op.join(OUTPUT_DIR, 'before-cnf.jpg')
+        # after_cfa_path = op.join(OUTPUT_DIR, 'after-cfa.jpg')
+        # cv2.imwrite(after_cfa_path, data['rgb_image'].astype(np.float32))
         pass
 
     def execute_bilinear(self, data):

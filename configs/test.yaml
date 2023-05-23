@@ -1,7 +1,7 @@
 module_enable_status:                 # do NOT modify modules order
   dpc: True
   blc: True
-  aaf: True
+  aaf: False
   awb: True
   cnf: True
   cfa: True
@@ -54,8 +54,12 @@ cfa:
   mode: custom
 
 ccm:
-  ccm:
-    - [ 1896, -811, -62, 0 ]          # x1024, copied from dcraw.c
+  # ccm:
+  #   - [ 1833, -689, 312, -433 ]          # x1024, copied from dcraw.c
+  #   - [ -396, 1687, 12, -310 ]
+  #   - [ 517, -1263, 2236, -466 ]
+    ccm:
+    - [ 1833, -811, -62, 0 ]          # x1024, copied from dcraw.c
     - [ -160, 1687, -503, 0 ]
     - [ 18, -557, 1563, 0 ]
 

@@ -5,6 +5,8 @@
 
 
 import numpy as np
+import os.path as op
+import cv2
 
 from .basic_module import BasicModule
 from .helpers import pad, split_bayer, reconstruct_bayer, shift_array, split_rgbir_bayer
@@ -13,7 +15,10 @@ from .helpers import pad, split_bayer, reconstruct_bayer, shift_array, split_rgb
 class AAF(BasicModule):
     def execute(self, data):
         bayer = data['bayer'].astype(np.uint32)
-
+        # OUTPUT_DIR = './output'
+        # before_AAF_path = op.join(OUTPUT_DIR, 'before-aaf-0.jpg')
+        # after_AAF_path = op.join(OUTPUT_DIR, 'after-aaf-0.jpg')
+        # cv2.imwrite(before_AAF_path, bayer.astype(np.float32))
         padded_bayer = pad(bayer, pads=2)
         padded_sub_arrays = split_rgbir_bayer(padded_bayer, self.cfg.hardware.bayer_pattern)
 
@@ -30,3 +35,5 @@ class AAF(BasicModule):
         aaf_bayer = reconstruct_bayer(aaf_sub_arrays, self.cfg.hardware.bayer_pattern)
 
         data['bayer'] = aaf_bayer.astype(np.uint16)
+        # cv2.imwrite(after_AAF_path,data['bayer'].astype(np.float32))
+        pass

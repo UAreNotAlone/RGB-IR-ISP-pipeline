@@ -5,7 +5,8 @@
 
 
 import numpy as np
-
+import os.path as op
+import cv2
 from .basic_module import BasicModule
 from .helpers import split_bayer, reconstruct_bayer, split_rgbir_bayer, get_rgbir_sub_array, get_mask_rgbir
 
@@ -27,6 +28,10 @@ class AWB(BasicModule):
 
     def execute(self, data):
         bayer = data['bayer'].astype(np.int32)
+        # OUTPUT_DIR = './output'
+        # before_awb_path = op.join(OUTPUT_DIR, 'before-awb.jpg')
+        # after_awb_path = op.join(OUTPUT_DIR, 'after-awb.jpg')
+        # cv2.imwrite(before_awb_path, bayer.astype(np.float32))
 
         #  Using QCGP to do the AWB
         bayer = np.clip(bayer, 0, self.cfg.saturation_values.hdr)
@@ -67,6 +72,8 @@ class AWB(BasicModule):
 
         m_RGBIR = m_RED * mask_r + m_GREEN * mask_g + m_BLUE * mask_b + m_IR * mask_ir
         data['bayer'] = m_RGBIR.astype(np.uint16)
+
+        # cv2.imwrite(after_awb_path, data['bayer'].astype(np.float32))
 
         # sub_arrays = split_bayer(bayer, self.cfg.hardware.bayer_pattern)
         # gains = (self.r_gain, self.gr_gain, self.gb_gain, self.b_gain)

@@ -5,6 +5,8 @@
 
 
 import numpy as np
+import cv2
+import os.path as op
 
 from .basic_module import BasicModule
 from .helpers import split_bayer, reconstruct_bayer, get_rgbir_sub_array, get_mask_rgbir
@@ -18,7 +20,11 @@ class BLC(BasicModule):
         self.beta = np.array(self.params.beta, dtype=np.int32)  # x1024
 
     def execute(self, data):
+        OUTPUT_DIR = './output'
+        before_BLC_path = op.join(OUTPUT_DIR, 'before_BLC.jpg')
+        after_BLC_path = op.join(OUTPUT_DIR, 'after_BLC.jpg')
         bayer = data['bayer'].astype(np.int32)
+        cv2.imwrite(before_BLC_path, bayer.astype(np.float32))
         raw_r, raw_g, raw_b, raw_ir = get_rgbir_sub_array(bayer)
         #  Get mean value for each channel
         #  Noted that raw_r is the sub-array of the original picture
@@ -56,6 +62,7 @@ class BLC(BasicModule):
         # gb -= (self.params.bl_gb - np.right_shift(b * self.beta, 10))
         # blc_bayer = reconstruct_bayer(
         #     (r, gr, gb, b), self.cfg.hardware.bayer_pattern
-        # )
+        
 
         data['bayer'] = np.clip(m_RGBIR, 0, None).astype(np.uint16)
+        cv2.imwrite(after_BLC_path, data['bayer'].astype(np.float32))

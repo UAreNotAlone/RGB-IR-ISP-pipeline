@@ -5,6 +5,8 @@
 
 
 import numpy as np
+import os.path as op
+import cv2
 
 from .basic_module import BasicModule
 from .helpers import split_bayer, reconstruct_bayer, mean_filter, split_rgbir_bayer
@@ -73,6 +75,10 @@ class CNF(BasicModule):
 
     def execute(self, data):
         bayer = data['bayer'].astype(np.int32)
+        # OUTPUT_DIR = './output'
+        # before_cnf_path = op.join(OUTPUT_DIR, 'before-cnf.jpg')
+        # after_cnf_path = op.join(OUTPUT_DIR, 'after-cnf.jpg')
+        # cv2.imwrite(before_cnf_path, bayer.astype(np.float32))
 
         sub_arrays = split_rgbir_bayer(bayer)
 
@@ -101,3 +107,4 @@ class CNF(BasicModule):
         cnf_bayer = np.clip(cnf_bayer, 0, self.cfg.saturation_values.hdr)
 
         data['bayer'] = cnf_bayer.astype(np.uint16)
+        # cv2.imwrite(after_cnf_path, data['bayer'].astype(np.float32))

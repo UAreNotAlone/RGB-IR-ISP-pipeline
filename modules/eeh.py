@@ -257,12 +257,12 @@ class EEH(BasicModule):
 
 
 
-        #  Cal Gradient
-        OUTPUT_DIR = './output'
-        edg_img_path = op.join(OUTPUT_DIR, 'edg_img.png')
-        cv2.imwrite(edg_img_path, edge)
+        # OUTPUT_DIR = './output'
+        # edg_img_path = op.join(OUTPUT_DIR, 'edg_img.png')
+        # cv2.imwrite(edg_img_path, edge)
         data['y_image'] = (y_image).astype(np.uint8)
         data['edge_map'] = edge
+        #  Cal Gradient
         # delta = y_image - generic_filter(y_image, self.gaussian)
         # sign_map = np.sign(delta)
         # abs_delta = np.abs(delta)

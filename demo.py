@@ -28,14 +28,13 @@ def demo_test_raw():
     cv2.imwrite(output_path, output)
     edge_map = data['edge_map']
     edge_map_path = op.join(OUTPUT_DIR, 'edge.png')
-    print(data['edge_map'])
     cv2.imwrite(edge_map_path, edge_map)
-    for module_name, result in intermediates.items():
-        output = pipeline.get_output(result)
-        print("intermediates...")
-        output_path = op.join(OUTPUT_DIR, '{}.jpg'.format(module_name))
-        output = cv2.cvtColor(output, cv2.COLOR_RGB2BGR)
-        cv2.imwrite(output_path, output)
+    # for module_name, result in intermediates.items():
+    #     output = pipeline.get_output(result)
+    #     print("intermediates...")
+    #     output_path = op.join(OUTPUT_DIR, '{}.jpg'.format(module_name))
+    #     output = cv2.cvtColor(output, cv2.COLOR_RGB2BGR)
+    #     cv2.imwrite(output_path, output)
 
 
 def demo_nikon_d3x():
@@ -84,7 +83,7 @@ if __name__ == '__main__':
     demo_test_raw()
 
     print('Processing Nikon D3x raw...')
-    demo_nikon_d3x()
+    #  demo_nikon_d3x()
 
     print('Processing Nikon D3x raw with intermediate results...')
-    demo_intermediate_results()
+    #  demo_intermediate_results()
